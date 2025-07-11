@@ -1,4 +1,4 @@
-name: Build Debian ISO with Preseed
+name: Build Debian ISO with Preseed in initrd
 
 on:
   push:
@@ -20,36 +20,44 @@ jobs:
       - name: Install required tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y xorriso genisoimage syslinux-utils tree
+          sudo apt-get install -y bsdtar genisoimage tree
 
       - name: Download Debian ISO
         run: |
           wget -O "${{ env.DEBIAN_ISO_FILE }}" "${{ env.DEBIAN_ISO_URL }}"
 
-      - name: Mount ISO and copy contents
+      - name: Extract ISO and copy contents
         run: |
-          mkdir -p iso-mount iso-new
-          sudo mount -o loop "${{ env.DEBIAN_ISO_FILE }}" iso-mount
-          tree -L 2 iso-mount
-          cp -rT iso-mount iso-new
+          mkdir -p iso-new
+          bsdtar -C iso-new -xf "${{ env.DEBIAN_ISO_FILE }}"
           chmod -R u+w iso-new
-          sudo umount iso-mount
 
-      - name: Inject preseed.cfg for USB
+      - name: Embed preseed.cfg into initrd
         run: |
-          cp debian-os-preseed.cfg iso-new/preseed.cfg
-          sed -i 's/append /append auto=true priority=critical preseed\/file=\/hd-media\/preseed.cfg /' iso-new/isolinux/txt.cfg
+          chmod +w -R iso-new/install.amd/
+          gunzip iso-new/install.amd/initrd.gz
+          cp debian-os-preseed.cfg iso-new/install.amd/
+          echo debian-os-preseed.cfg | cpio -H newc -o -A -F iso-new/install.amd/initrd
+          rm iso-new/install.amd/debian-os-preseed.cfg
+          gzip iso-new/install.amd/initrd
+          chmod -w -R iso-new/install.amd/
+
+      - name: Update md5sum.txt
+        run: |
+          cd iso-new
+          chmod +w md5sum.txt
+          find -follow -type f ! -name md5sum.txt -print0 | xargs -0 md5sum > md5sum.txt
+          chmod -w md5sum.txt
+          cd ..
 
       - name: Build new ISO
         run: |
           ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d%H%M%S).iso"
-          xorriso -as mkisofs \
-            -o "$ISO_NAME" \
-            -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot \
-            -boot-load-size 4 -boot-info-table \
-            -J -R -V "debian_snoopy" iso-new
+          genisoimage -r -J \
+            -b isolinux/isolinux.bin -c isolinux/boot.cat \
+            -no-emul-boot -boot-load-size 4 -boot-info-table \
+            -o "$ISO_NAME" iso-new
 
-          isohybrid "$ISO_NAME"
           echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
 
       - name: Upload ISO artifact
