@@ -40,15 +40,10 @@ jobs:
 
       - name: Embed preseed.cfg into initrd
         run: |
-          chmod +w -R iso-new/install.amd/
           gunzip iso-new/install.amd/initrd.gz
           echo preseed.cfg | cpio -H newc -o -A -F iso-new/install.amd/initrd
           gzip iso-new/install.amd/initrd
           chmod -w -R iso-new/install.amd/
-
-      - name: Force auto mode
-        run: |
-          sed -i 's/append /append auto=true priority=critical /' iso-new/isolinux/txt.cfg
 
       - name: Update md5sum.txt
         run: |
