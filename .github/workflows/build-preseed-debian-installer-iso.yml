@@ -44,6 +44,11 @@ jobs:
           echo "Setting timeout to 10:"
           find "iso-new/isolinux" -name "*.cfg" -exec bash -c 'echo "Processing {}"; grep -n "timeout 300" {} || true; sed -i "s/^timeout 300/timeout 10/" {}' \;
 
+      - name: Set default install in isolinux.cfg
+        run: |
+          echo "Patching isolinux.cfg to set default=install"
+          sed -i '/^default /c\default install' iso-new/isolinux/isolinux.cfg
+
       - name: Force auto mode and point to preseed.cfg
         run: |
           echo "Patching txt.cfg to use preseed file"
