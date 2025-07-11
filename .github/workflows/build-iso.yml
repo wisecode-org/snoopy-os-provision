@@ -20,7 +20,7 @@ jobs:
       - name: Install required tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y bsdtar genisoimage tree
+          sudo apt-get install -y genisoimage syslinux-utils libarchive-tools
 
       - name: Download Debian ISO
         run: |
@@ -36,9 +36,7 @@ jobs:
         run: |
           chmod +w -R iso-new/install.amd/
           gunzip iso-new/install.amd/initrd.gz
-          cp debian-os-preseed.cfg iso-new/install.amd/
           echo debian-os-preseed.cfg | cpio -H newc -o -A -F iso-new/install.amd/initrd
-          rm iso-new/install.amd/debian-os-preseed.cfg
           gzip iso-new/install.amd/initrd
           chmod -w -R iso-new/install.amd/
 
