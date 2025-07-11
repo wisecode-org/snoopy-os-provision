@@ -27,7 +27,6 @@ jobs:
           cp -rT iso-mount iso-new
           chmod -R u+w iso-new
           sudo umount iso-mount
-
       - name: Inject preseed.cfg at root for USB
         run: |
           cp debian-os-preseed.cfg iso-new/preseed.cfg
