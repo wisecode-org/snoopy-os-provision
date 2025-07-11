@@ -42,7 +42,7 @@ jobs:
 
       - name: Build new ISO
         run: |
-          ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d)-${GITHUB_SHA::7}.iso"
+          ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d%H%M%S).iso"
           xorriso -as mkisofs \
             -o "$ISO_NAME" \
             -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot \
