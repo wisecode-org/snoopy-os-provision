@@ -47,7 +47,7 @@ jobs:
       - name: Force auto mode and point to preseed.cfg
         run: |
           echo "Patching txt.cfg to use preseed file"
-          sed -i 's~append ~append auto=true priority=critical preseed/file=/preseed.cfg ~' iso-new/isolinux/txt.cfg
+          sed -i 's~append~append auto=true priority=critical auto-install/enable=true preseed/file=/preseed.cfg~' iso-new/isolinux/txt.cfg
 
       - name: Embed preseed.cfg into initrd
         run: |
