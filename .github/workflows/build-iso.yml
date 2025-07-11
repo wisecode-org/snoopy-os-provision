@@ -10,7 +10,7 @@ env:
   DEBIAN_ISO_FILE: debian-netinst.iso
 
 jobs:
-  build-iso:
+  build-preseed-debian-installer-iso:
     runs-on: ubuntu-latest
 
     steps:
@@ -45,7 +45,6 @@ jobs:
           ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d)-${GITHUB_SHA::7}.iso"
           xorriso -as mkisofs \
             -o "$ISO_NAME" \
-            -isohybrid-mbr iso-new/isolinux/isohdpfx.bin \
             -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot \
             -boot-load-size 4 -boot-info-table \
             -J -R -V "debian_snoopy" iso-new
