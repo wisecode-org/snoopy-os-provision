@@ -40,10 +40,6 @@ jobs:
           gzip iso-new/install.amd/initrd
           chmod -w -R iso-new/install.amd/
 
-      - name: Force auto mode
-        run: |
-          sed -i 's/append /append auto=true priority=critical /' iso-new/isolinux/txt.cfg
-
       - name: Update md5sum.txt
         run: |
           cd iso-new
