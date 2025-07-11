@@ -36,7 +36,7 @@ jobs:
         run: |
           chmod +w -R iso-new/install.amd/
           gunzip iso-new/install.amd/initrd.gz
-          echo debian-os-preseed.cfg | cpio -H newc -o -A -F iso-new/install.amd/initrd
+          echo preseed.cfg | cpio -H newc -o -A -F iso-new/install.amd/initrd
           gzip iso-new/install.amd/initrd
           chmod -w -R iso-new/install.amd/
 
