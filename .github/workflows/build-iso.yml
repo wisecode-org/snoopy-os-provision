@@ -60,6 +60,9 @@ jobs:
             -no-emul-boot -boot-load-size 4 -boot-info-table \
             -o "$ISO_NAME" iso-new
 
+          # Make it hybrid (bootable from USB)
+          isohybrid "$ISO_NAME"
+
           echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
 
       - name: Upload ISO artifact
