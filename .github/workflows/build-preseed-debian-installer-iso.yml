@@ -17,12 +17,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Confirm preseed.cfg exists
-        run: |
-          ls -l
-          pwd
-          cat preseed.cfg
-
       - name: Install required tools
         run: |
           sudo apt-get update
@@ -53,7 +47,8 @@ jobs:
       - name: Force auto mode and point to preseed.cfg
         run: |
           echo "Patching txt.cfg to use preseed file"
-          sed -i 's~append auto=true priority=critical~append auto=true priority=critical preseed/file=/preseed.cfg~' iso-new/isolinux/txt.cfg
+          sed -i 's~append ~append auto=true priority=critical preseed/file=/preseed.cfg ~' iso-new/isolinux/txt.cfg
+
       - name: Embed preseed.cfg into initrd
         run: |
           gunzip iso-new/install.amd/initrd.gz
