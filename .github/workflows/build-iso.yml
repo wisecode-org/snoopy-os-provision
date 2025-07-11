@@ -25,6 +25,7 @@ jobs:
           mkdir -p iso-mount iso-new
           sudo mount -o loop debian-netinst.iso iso-mount
           cp -rT iso-mount iso-new
+          chmod -R u+w iso-new
           sudo umount iso-mount
 
       - name: Inject preseed.cfg at root for USB
@@ -41,7 +42,7 @@ jobs:
             -isohybrid-mbr iso-new/isolinux/isohdpfx.bin \
             -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot \
             -boot-load-size 4 -boot-info-table \
-            -J -R -V "Debian_Snoopy" iso-new
+            -J -R -V "debian_snoopy" iso-new
 
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
