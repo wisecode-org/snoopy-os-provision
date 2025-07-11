@@ -73,6 +73,7 @@ jobs:
         run: |
           ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d%H%M%S).iso"
           genisoimage -r -J \
+            -V "debian-snoopy" \
             -b isolinux/isolinux.bin -c isolinux/boot.cat \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
             -o "$ISO_NAME" iso-new
