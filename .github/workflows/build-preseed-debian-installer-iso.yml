@@ -38,6 +38,18 @@ jobs:
           bsdtar -C iso-new -xf "${{ env.DEBIAN_ISO_FILE }}"
           chmod -R u+w iso-new
 
+      - name: Patch isolinux config for bug #1009002
+        run: |       
+          echo "Counting .cfg files in isolinux"
+          CFG_COUNT=$(find "iso-new/isolinux" -name "*.cfg" 2>/dev/null | wc -l)
+          echo "Found $CFG_COUNT .cfg files"
+
+          echo "Removing ontimeout lines:"
+          find "iso-new/isolinux" -name "*.cfg" -exec bash -c 'echo "Processing {}"; grep -n "ontimeout" {} || true; sed -i "/^ontimeout /d" {}' \;
+
+          echo "Setting timeout to 10:"
+          find "iso-new/isolinux" -name "*.cfg" -exec bash -c 'echo "Processing {}"; grep -n "timeout 300" {} || true; sed -i "s/^timeout 300/timeout 10/" {}' \;
+
       - name: Embed preseed.cfg into initrd
         run: |
           gunzip iso-new/install.amd/initrd.gz
