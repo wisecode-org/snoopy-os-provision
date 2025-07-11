@@ -4,47 +4,57 @@ on:
   push:
     branches: [ main ]
 
+env:
+  ISO_SUFFIX_NAME: debian-snoopy-preseed
+  DEBIAN_ISO_URL: https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso
+  DEBIAN_ISO_FILE: debian-netinst.iso
+
 jobs:
   build-iso:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install tools
+      - name: Install required tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y xorriso genisoimage
+          sudo apt-get install -y xorriso genisoimage syslinux-utils tree
 
       - name: Download Debian ISO
         run: |
-          wget -O debian-netinst.iso https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso
+          wget -O "${{ env.DEBIAN_ISO_FILE }}" "${{ env.DEBIAN_ISO_URL }}"
 
       - name: Mount ISO and copy contents
         run: |
           mkdir -p iso-mount iso-new
-          sudo mount -o loop debian-netinst.iso iso-mount
+          sudo mount -o loop "${{ env.DEBIAN_ISO_FILE }}" iso-mount
+          tree -L 2 iso-mount
           cp -rT iso-mount iso-new
           chmod -R u+w iso-new
           sudo umount iso-mount
-      - name: Inject preseed.cfg at root for USB
+
+      - name: Inject preseed.cfg for USB
         run: |
           cp debian-os-preseed.cfg iso-new/preseed.cfg
-
-          # Modificar línea de boot para USB (hd-media)
           sed -i 's/append /append auto=true priority=critical preseed\/file=\/hd-media\/preseed.cfg /' iso-new/isolinux/txt.cfg
 
       - name: Build new ISO
         run: |
+          ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d)-${GITHUB_SHA::7}.iso"
           xorriso -as mkisofs \
-            -o debian-snoopy-preseed.iso \
+            -o "$ISO_NAME" \
             -isohybrid-mbr iso-new/isolinux/isohdpfx.bin \
             -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot \
             -boot-load-size 4 -boot-info-table \
             -J -R -V "debian_snoopy" iso-new
 
+          isohybrid "$ISO_NAME"
+          echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
+
       - name: Upload ISO artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debian-snoopy-preseed
-          path: debian-snoopy-preseed.iso
+          name: ${{ env.ISO_NAME }}
+          path: ${{ env.ISO_NAME }}
