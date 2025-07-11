@@ -1,0 +1,50 @@
+name: Build Debian ISO with Preseed
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-iso:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y xorriso genisoimage
+
+      - name: Download Debian ISO
+        run: |
+          wget -O debian-netinst.iso https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.11.0-amd64-netinst.iso
+
+      - name: Mount ISO and copy contents
+        run: |
+          mkdir -p iso-mount iso-new
+          sudo mount -o loop debian-netinst.iso iso-mount
+          cp -rT iso-mount iso-new
+          sudo umount iso-mount
+
+      - name: Inject preseed.cfg at root for USB
+        run: |
+          cp debian-os-preseed.cfg iso-new/preseed.cfg
+
+          # Modificar línea de boot para USB (hd-media)
+          sed -i 's/append /append auto=true priority=critical preseed\/file=\/hd-media\/preseed.cfg /' iso-new/isolinux/txt.cfg
+
+      - name: Build new ISO
+        run: |
+          xorriso -as mkisofs \
+            -o debian-snoopy-preseed.iso \
+            -isohybrid-mbr iso-new/isolinux/isohdpfx.bin \
+            -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot \
+            -boot-load-size 4 -boot-info-table \
+            -J -R -V "Debian_Snoopy" iso-new
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-snoopy-preseed
+          path: debian-snoopy-preseed.iso
