@@ -1,9 +1,7 @@
-# Snoopy Debian Preseed ISO Builder
+# Snoopy OS Preseed ISO Builder
 
-## Overview
-
-Snoopy is a fully automated solution to build a **custom Debian installation ISO** with an embedded `preseed.cfg` for unattended installations on servers.  
-This repository includes a ready-to-use **CI/CD pipeline** configured with **GitHub Actions** that produces a hybrid (BIOS+UEFI) bootable ISO and saves it as a downloadable artifact.
+This repo contains a fully automated pipeline to build a **custom Debian installation ISO** with an embedded `preseed.cfg` for unattended installations on servers.  
+It's includes a ready-to-use **CI/CD pipeline** configured with **GitHub Actions** that produces a hybrid (BIOS+UEFI) bootable ISO and saves it as a downloadable artifact.
 
 The goal is to enable fast, consistent, and repeatable Debian installations with predefined users, SSH keys, static network configuration, and a secure partitioning scheme.  
 No manual intervention is required during installation, just boot from the generated ISO and let it do the work.
