@@ -20,7 +20,7 @@ jobs:
       - name: Install required tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y xorriso syslinux-utils libarchive-tools
+          sudo apt-get install -y xorriso isolinux syslinux-utils libarchive-tools
 
       - name: Download Debian ISO
         run: |
@@ -80,8 +80,7 @@ jobs:
             -b isolinux/isolinux.bin \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
             -eltorito-alt-boot \
-            -e EFI/boot/bootx64.efi \
-            -no-emul-boot \
+            -e EFI/boot/bootx64.efi -no-emul-boot \
             iso-new
 
           echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
