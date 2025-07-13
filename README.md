@@ -1,6 +1,6 @@
 # Snoopy OS Preseed ISO Builder
 
-This repo contains a fully automated pipeline to build a **custom Debian installation ISO** with an embedded `preseed.cfg` for unattended installations on servers. It's includes a ready-to-use **CI/CD pipeline** configured with **GitHub Actions** that produces a hybrid (BIOS+UEFI) bootable ISO and saves it as a downloadable artifact.
+This repo contains a fully automated pipeline to build a custom hybrid (BIOS+UEFI) Debian installation ISO with an embedded preseed.cfg for unattended server installations. The resulting ISO file is saved as an artifact in GitHub Actions after the CI/CD pipeline runs.
 
 The goal is to enable fast, consistent, and repeatable Debian installations with predefined users, SSH keys, static network configuration, and a secure partitioning scheme.
 
@@ -15,9 +15,6 @@ A GitHub Actions pipeline (`.github/workflows/debian-preseed.yml`) that:
 - Patches `isolinux` configurations for improved boot behavior.
 - Rebuilds the ISO using `xorriso` with proper hybrid BIOS+UEFI support.
 - Uploads the resulting ISO as a build artifact.
-
-Example SSH keys and hashed passwords for automated login.  
-Fully documented and reproducible.
 
 ## How to build the ISO
 
