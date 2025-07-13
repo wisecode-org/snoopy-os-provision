@@ -80,7 +80,7 @@ jobs:
             -b isolinux/isolinux.bin \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
             -eltorito-alt-boot \
-            -e boot/grub/efi.img \
+            -e EFI/boot/bootx64.efi \
             -no-emul-boot \
             iso-new
 
