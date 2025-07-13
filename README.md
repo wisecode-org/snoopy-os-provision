@@ -1,4 +1,4 @@
-# Snoopy OS Preseed ISO Builder
+# Debian Preseed ISO Builder for Snoopy Server
 
 This repo contains a fully automated pipeline to build a custom hybrid (BIOS+UEFI) Debian installation ISO with an embedded preseed.cfg for unattended server installations. The resulting ISO file is saved as an artifact in GitHub Actions after the CI/CD pipeline runs.
 
