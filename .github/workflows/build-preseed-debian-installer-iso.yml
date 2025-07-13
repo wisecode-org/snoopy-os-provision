@@ -76,6 +76,8 @@ jobs:
             -r -J -V "debian-snoopy" \
             -o "$ISO_NAME" \
             -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
+            -partition_offset 16 \
+            -append_partition 2 0xef iso-new/boot/grub/efi.img \
             -c isolinux/boot.cat \
             -b isolinux/isolinux.bin \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
