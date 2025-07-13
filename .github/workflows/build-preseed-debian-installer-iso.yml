@@ -69,17 +69,20 @@ jobs:
           chmod -w md5sum.txt
           cd ..
 
-      - name: Build new ISO
+      - name: Build new ISO with xorriso (UEFI+BIOS hybrid)
         run: |
           ISO_NAME="${{ env.ISO_SUFFIX_NAME }}-$(date +%Y%m%d%H%M%S).iso"
-          genisoimage -r -J \
-            -V "debian-snoopy" \
-            -b isolinux/isolinux.bin -c isolinux/boot.cat \
+          xorriso -as mkisofs \
+            -r -J -V "debian-snoopy" \
+            -o "$ISO_NAME" \
+            -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
+            -c isolinux/boot.cat \
+            -b isolinux/isolinux.bin \
             -no-emul-boot -boot-load-size 4 -boot-info-table \
-            -o "$ISO_NAME" iso-new
-
-          # Make it hybrid (bootable from USB)
-          isohybrid "$ISO_NAME"
+            -eltorito-alt-boot \
+            -e boot/grub/efi.img \
+            -no-emul-boot \
+            iso-new
 
           echo "ISO_NAME=$ISO_NAME" >> $GITHUB_ENV
 
